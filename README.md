@@ -12,6 +12,7 @@ Snoopy subscribes to events on the Ethereum network you specify and spits out st
 |/|9080|returns stats on snooped blocks|GET|Token|
 |/blockid|9080|Return dump of block with internal id|POST|Token|
 |/blockhash|9080|Return dump of block with hash|POST|Token|
+|/blocknumber|9080|Return dump of block with number|POST|Token|
 |/metrics|2112|Prometheus metrics endpoint|GET|No|
 
 # Some ideas:
@@ -31,16 +32,20 @@ export SNOOPY_API_TOKEN=TestToken
 ~~~
 An very minimalistic test;
 ~~~
-$ go test *_test.go
+$ go test -cover
 ~~~
 ~~~
-ok      command-line-arguments  0.002s
+2022/05/04 16:05:02 Success! you connected to the ropsten Network
+2022/05/04 16:05:02 Success! you connected to the ropsten Network
+2022/05/04 16:05:10 Got: {"Id":1,"BlockHash":"0x90d337977aa098f7f69b19fe29e09464486d725f58fa84b1ccdcb04246d74ada","BlockNumber":"14711389","BlockTime":1651673102,"BlockNonce":7604351258204595666,"BlockNumTransactions":134}
+PASS
+coverage: 25.0% of statements
+ok      snoopy/v2       8.318s
 ~~~
-Quickly build the executable;
+Quickly build and run the executable;
 ~~~
 $ cd src/
-$ go build .
-$ ./snoopy
+$ go build . && ./snoopy
 ~~~
 Starts the snooping on whatever net you've specified above in the ENV's
 Use the curl commands below in Endpoints to test.
@@ -53,7 +58,7 @@ export SNOOPY_API_TOKEN=TestToken
 export SNOOPY_NAMESPACE=snoopy
 export SNOOPY_INGRESS_CLASS=traefik
 export SNOOPY_INGRESS_HOST=snoopy.local
-export SNOOPY_VERSION=v0.1.1
+export SNOOPY_VERSION=v0.6.4
 ~~~
 Create the snoopy namespace;
 ~~~
@@ -271,6 +276,22 @@ curl -s -H "X-Token: TestToken" -d '{"Hash": "0xd92a881dd3e68c25fc78e9495f200e4e
     "BlockTime": 1651566840,
     "BlockNonce": 7343538744684689000,
     "BlockNumTransactions": 28
+  }
+]
+~~~
+## Get Block Data by Number
+~~~
+curl -s -H "X-Token: TestToken" -d '{"Number": "14711278"}' http://localhost:9080/blocknumber | jq
+~~~
+~~~
+[
+  {
+    "Id": 4,
+    "BlockHash": "0xf2075ccaa5e1f77b063fa58e06479678681ed60409356a65a28e8a21b20e2b67",
+    "BlockNumber": "14711278",
+    "BlockTime": 1651671625,
+    "BlockNonce": 16791431146648115000,
+    "BlockNumTransactions": 32
   }
 ]
 ~~~
