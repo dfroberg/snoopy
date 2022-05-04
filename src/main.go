@@ -237,6 +237,7 @@ func (amw *authenticationMiddleware) PopulateAllowedTokens() {
 // Middleware function, which will be called for each request
 func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestsProcessed.Inc()
 		token := r.Header.Get("X-Token")
 		if user, found := amw.tokenUsers[token]; found {
 			// We found the token in our map
