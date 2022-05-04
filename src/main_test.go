@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"sync"
 	"testing"
 )
 
@@ -90,11 +92,48 @@ func TestLocalStorage(t *testing.T) {
 	}
 }
 
-func TestId(t *testing.T) {
+func TestIdAccess(t *testing.T) {
 	testTransactionRow := testTransaction{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: "12232778", BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
 	testLocalStore(testTransactionRow)
 	v := testTransactionRow.Id
 	if v != 4 {
+		t.Error("Fails")
+	}
+}
+
+func TestHashAccess(t *testing.T) {
+	testTransactionRow := testTransaction{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: "12232778", BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
+	testLocalStore(testTransactionRow)
+	v := testTransactionRow.BlockHash
+	if v != "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0" {
+		t.Error("Fails")
+	}
+}
+
+func TestBlockNumberAccess(t *testing.T) {
+	testTransactionRow := testTransaction{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: "12232778", BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
+	testLocalStore(testTransactionRow)
+	v := testTransactionRow.BlockNumber
+	if v != "12232778" {
+		t.Error("Fails")
+	}
+}
+func TestNetworkAccess(t *testing.T) {
+	projectID := os.Getenv("SNOOPY_PROJECT_ID")
+	networkName := os.Getenv("SNOOPY_NETWORK_NAME")
+	if !check_connect(projectID, networkName) {
+		t.Error("Fails")
+	}
+}
+
+func TestSnoop(t *testing.T) {
+	var wg sync.WaitGroup
+	wg.Add(1)
+	ch1 := make(chan bool)
+	// Run Snoop, collect 1 block and return
+	go snoop(&wg, 1, ch1)
+	var r bool = <-ch1
+	if !r {
 		t.Error("Fails")
 	}
 }

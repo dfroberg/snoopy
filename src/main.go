@@ -77,7 +77,7 @@ var TransactionByHash map[string][]*Transaction
 
 func LocalStore(transaction Transaction) {
 	TransactionById[transaction.Id] = &transaction
-	//TransactionByNumber[transaction.BlockNumber] = append(TransactionByNumber[transaction.BlockNumber], &transaction)
+	TransactionByNumber[transaction.BlockNumber] = append(TransactionByNumber[transaction.BlockNumber], &transaction)
 	TransactionByHash[fmt.Sprint(transaction.BlockHash)] = append(TransactionByHash[fmt.Sprint(transaction.BlockHash)], &transaction)
 }
 
@@ -102,7 +102,7 @@ func check_connect(projectID string, networkName string) bool {
 	}
 }
 
-func snoop(wg *sync.WaitGroup) bool {
+func snoop(wg *sync.WaitGroup, maxBlocks int, ch1 chan bool) bool {
 	defer wg.Done()
 	projectID := os.Getenv("SNOOPY_PROJECT_ID")
 	networkName := os.Getenv("SNOOPY_NETWORK_NAME")
@@ -110,6 +110,7 @@ func snoop(wg *sync.WaitGroup) bool {
 	if check_connect(projectID, networkName) {
 		TransactionById = make(map[int]*Transaction)
 		TransactionByHash = make(map[string][]*Transaction)
+		TransactionByNumber = make(map[string][]*Transaction)
 
 		client, err := ethclient.Dial("wss://" + networkName + ".infura.io/ws/v3/" + projectID)
 		if err != nil {
@@ -178,6 +179,11 @@ func snoop(wg *sync.WaitGroup) bool {
 
 				// 	fmt.Println(receipt.Status) // 1
 				// }
+				// Enable breakout
+				if i >= maxBlocks && maxBlocks > 0 {
+					wg.Done()
+					ch1 <- true
+				}
 			}
 		}
 
@@ -195,6 +201,9 @@ type ProcessSnoopBlockIdRequest struct {
 }
 type ProcessSnoopBlockHashRequest struct {
 	Hash string `json:"hash,omitempty"`
+}
+type ProcessSnoopBlockNumberRequest struct {
+	Number string `json:"number,omitempty"`
 }
 
 // Define our auth struct
@@ -218,6 +227,7 @@ func (a *App) setupRoutes() {
 	api.HandleFunc("/blocks", a.processSnoopBlocksRequest).Methods("GET")
 	api.HandleFunc("/blockid", a.processSnoopBlockIdRequest).Methods("POST")
 	api.HandleFunc("/blockhash", a.processSnoopBlockHashRequest).Methods("POST")
+	api.HandleFunc("/blocknumber", a.processSnoopBlockNumberRequest).Methods("POST")
 	// Non Authenticated Routes
 	a.Router.HandleFunc("/ping", a.pingRoute).Methods("GET")
 	a.Router.HandleFunc("/health", a.healthCheck).Methods("GET")
@@ -335,6 +345,35 @@ func (a *App) processSnoopBlockIdRequest(w http.ResponseWriter, r *http.Request)
 	respondWithJSON(w, http.StatusOK, TransactionById[pr.Id])
 }
 
+func (a *App) processSnoopBlockNumberRequest(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
+		return
+	}
+	println(string(body))
+	var pr ProcessSnoopBlockNumberRequest
+	err = json.Unmarshal(body, &pr)
+	if err != nil {
+		log.Println(err.Error())
+		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
+		return
+	}
+
+	if pr.Number == "" {
+		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request. Missing or faulty fields or out of bounds"})
+		return
+	}
+
+	// Reply with Transaction Data
+	s, err := json.Marshal(TransactionByNumber[pr.Number])
+	if err != nil {
+		log.Print(err)
+	}
+	log.Println("Sending: " + string(s))
+	respondWithJSON(w, http.StatusOK, TransactionByNumber[pr.Number])
+}
+
 func (a *App) processSnoopBlocksRequest(w http.ResponseWriter, r *http.Request) {
 	_, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -367,13 +406,13 @@ func prometheusRun(port string, wg *sync.WaitGroup) bool {
 
 func main() {
 	var wg sync.WaitGroup
-
+	ch1 := make(chan bool)
 	a := App{}
 	a.Initialize()
 	// WaitGroups
 	wg.Add(3)
 	go a.Run(":9080", &wg)
 	go prometheusRun(":2112", &wg)
-	go snoop(&wg)
+	go snoop(&wg, 0, ch1)
 	wg.Wait()
 }
