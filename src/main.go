@@ -29,9 +29,25 @@ type Stats struct {
 
 var allStats = Stats{NumBlocks: 0, NumTx: 0, NumAuthRequests: 0, NumUnAuthRequests: 0, NumSystemRequests: 0, NumApiConns: 0}
 var (
-	opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+	eventsProcessed = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "snoopy_processed_events_total",
 		Help: "The total number of processed events",
+	})
+	blocksProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "snoopy_processed_blocks_total",
+		Help: "The total number of processed blocks",
+	})
+	txProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "snoopy_processed_transactions_total",
+		Help: "The total number of processed transactions",
+	})
+	requestsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "snoopy_processed_requests_total",
+		Help: "The total number of processed requests",
+	})
+	apiCallsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "snoopy_processed_apicalls_total",
+		Help: "The total number of processed api calls",
 	})
 )
 
@@ -81,6 +97,7 @@ func check_connect(projectID string, networkName string) bool {
 	} else {
 		log.Println("Success! you connected to the " + networkName + " Network")
 		allStats.NumApiConns++
+		apiCallsProcessed.Inc()
 		return true
 	}
 }
@@ -103,6 +120,7 @@ func snoop(wg *sync.WaitGroup) bool {
 		if err != nil {
 			log.Fatal(err)
 		}
+		apiCallsProcessed.Inc()
 		allStats.NumApiConns++
 		var i = 0
 		for {
@@ -111,7 +129,7 @@ func snoop(wg *sync.WaitGroup) bool {
 				log.Print(err) // Log error and continue
 			case header := <-headers:
 				// log.Println(header.Hash().Hex()) // 0xbc10defa8dda384c96a17640d84de5578804945d347072e091b4e5f390ddea7f
-
+				eventsProcessed.Inc()
 				block, err := client.BlockByHash(context.Background(), header.Hash())
 				if err != nil {
 					log.Print(err) // Log error and continue
@@ -121,9 +139,12 @@ func snoop(wg *sync.WaitGroup) bool {
 				i++
 				cTransaction := Transaction{Id: i, BlockHash: block.Hash().Hex(), BlockNumber: fmt.Sprint(block.Number().Uint64()), BlockTime: block.Time(), BlockNonce: block.Nonce(), BlockNumTransactions: len(block.Transactions())}
 				LocalStore(cTransaction)
-				opsProcessed.Inc()
 				allStats.NumBlocks++
 				allStats.NumTx += len(block.Transactions())
+				// Combine Prometheus metrics
+				blocksProcessed.Inc()
+				var txInBlock float64 = float64(len(block.Transactions()))
+				txProcessed.Add(txInBlock)
 				// Reply with Transaction Data
 				s, err := json.Marshal(TransactionById[i])
 				if err != nil {

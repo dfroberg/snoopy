@@ -3,7 +3,7 @@ PROJECTDIR=$(git rev-parse --show-toplevel)
 cd $PROJECTDIR/src
 # Unless already defined
 if [ -z $SNOOPY_VESRION ]; then
-    export SNOOPY_VERSION=v0.1.1
+    export SNOOPY_VERSION=v0.1.2
 fi
 docker build --tag dfroberg/snoopy:$SNOOPY_VERSION .
 docker image tag dfroberg/snoopy:$SNOOPY_VERSION dfroberg/snoopy:$SNOOPY_VERSION
