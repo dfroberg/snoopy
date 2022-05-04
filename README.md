@@ -35,18 +35,17 @@ An very minimalistic test;
 $ go test -cover
 ~~~
 ~~~
-2022/05/04 16:05:02 Success! you connected to the mainnet Network
-2022/05/04 16:05:02 Success! you connected to the mainnet Network
+2022/05/04 16:05:02 Success! you connected to the ropsten Network
+2022/05/04 16:05:02 Success! you connected to the ropsten Network
 2022/05/04 16:05:10 Got: {"Id":1,"BlockHash":"0x90d337977aa098f7f69b19fe29e09464486d725f58fa84b1ccdcb04246d74ada","BlockNumber":"14711389","BlockTime":1651673102,"BlockNonce":7604351258204595666,"BlockNumTransactions":134}
 PASS
 coverage: 25.0% of statements
 ok      snoopy/v2       8.318s
 ~~~
-Quickly build the executable;
+Quickly build and run the executable;
 ~~~
 $ cd src/
-$ go build .
-$ ./snoopy
+$ go build . && ./snoopy
 ~~~
 Starts the snooping on whatever net you've specified above in the ENV's
 Use the curl commands below in Endpoints to test.
@@ -59,7 +58,7 @@ export SNOOPY_API_TOKEN=TestToken
 export SNOOPY_NAMESPACE=snoopy
 export SNOOPY_INGRESS_CLASS=traefik
 export SNOOPY_INGRESS_HOST=snoopy.local
-export SNOOPY_VERSION=v0.1.1
+export SNOOPY_VERSION=v0.6.4
 ~~~
 Create the snoopy namespace;
 ~~~
