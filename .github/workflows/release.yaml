@@ -12,7 +12,7 @@ jobs:
       - id: release
         uses: rymndhng/release-on-push-action@master
         with:
-          bump_version_scheme: minor
+          bump_version_scheme: patch
           use_github_release_notes: true
           release_name: "Release <RELEASE_VERSION>"
           max_commits: 100
