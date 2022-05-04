@@ -1,5 +1,4 @@
 name: ci
-
 on:
   pull_request:
     branches:
@@ -7,22 +6,6 @@ on:
     paths:
       - 'src/**/*'
 jobs:
-  release-on-push:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - id: release
-        uses: rymndhng/release-on-push-action@master
-        with:
-          bump_version_scheme: minor
-          use_github_release_notes: true
-          release_name: "Release <RELEASE_VERSION>"
-          max_commits: 100
-      - name: Check Output Parameters
-        run: |
-          echo "Got tag name ${{ steps.release.outputs.tag_name }}"
-          echo "Got release version ${{ steps.release.outputs.version }}"
   docker:
     runs-on: ubuntu-latest
     steps:
