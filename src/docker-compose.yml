@@ -1,0 +1,11 @@
+version: '3'
+services:
+  snoopy:
+    environment:
+      - SNOOPY_PROJECT_ID=$SNOOPY_PROJECT_ID
+      - SNOOPY_NETWORK_NAME=mainnet
+      - SNOOPY_API_TOKEN=TestToken
+    build: .
+    ports:
+     - "9080:9080"
+     - "2112:2112"

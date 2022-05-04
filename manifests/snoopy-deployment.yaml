@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snoopy
+  namespace: $SNOOPY_NAMESPACE
+  labels:
+    app: snoopy
+spec:
+  selector:
+    matchLabels:
+      app: snoopy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: snoopy
+    spec:
+      containers:
+      - name: snoopy
+        image: dfroberg/snoopy:$SNOOPY_VERSION  # Use tagged version in prod
+        imagePullPolicy: Always              # Use IfNotPresent in prod
+        resources:
+          limits:
+            memory: "250Mi"
+            cpu: "125m"
+        ports:
+        - containerPort: 9080
+        - containerPort: 2112
+        env:
+        - name: SNOOPY_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: common-snoopy-secret
+              key: SNOOPY_API_TOKEN
+        - name: SNOOPY_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              name: common-snoopy-secret
+              key: SNOOPY_PROJECT_ID
+        - name: SNOOPY_NETWORK_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: snoopy-config-map
+              key: SNOOPY_NETWORK_NAME
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9080
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9080
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 1

@@ -1,0 +1,30 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: snoopy-ingress
+  namespace: $SNOOPY_NAMESPACE
+  labels:
+    app: snoopy
+  annotations:
+    app: snoopy
+spec:
+  ingressClassName: $SNOOPY_INGRESS_CLASS
+  rules:
+    - host: "$SNOOPY_INGRESS_HOST"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: snoopy-service
+                port:
+                  number: 9080
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: snoopy-service
+                port:
+                  number: 2112

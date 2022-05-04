@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $SNOOPY_NAMESPACE
+  labels:
+    app: snoopy
+spec: {}
+status: {}
