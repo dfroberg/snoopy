@@ -415,4 +415,5 @@ func main() {
 	go prometheusRun(":2112", &wg)
 	go snoop(&wg, 0, ch1)
 	wg.Wait()
+	close(ch1)
 }

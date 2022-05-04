@@ -136,4 +136,10 @@ func TestSnoop(t *testing.T) {
 	if !r {
 		t.Error("Fails")
 	}
+	close(ch1)
+}
+
+func TestMain(t *testing.T) {
+	a := App{}
+	a.Initialize()
 }
