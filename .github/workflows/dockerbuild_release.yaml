@@ -1,12 +1,12 @@
-name: dockerbuild_release
+name: 'Docker Build Release'
 on:
   workflow_dispatch:
   workflow_run:
     workflows: ["release"]
-    types:
-      - completed
+    types: [completed]
 jobs:
   docker:
+    name: 'Build Docker Images'
     runs-on: ubuntu-latest
     if: {{ github.event.workflow_run.conclusion == 'success' }}
     steps:
