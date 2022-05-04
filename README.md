@@ -1,9 +1,9 @@
 # Snoopy
 Snoopy subscribes to events on the Ethereum network you specify and spits out stats and information about blocks it has gathered since it started.
 
-There is no persistance layer yet.
-
-Snoopy uses infura API endpoints to access the network.
+*NOTES:*
+* There is no persistance layer yet.
+* Snoopy uses infura API endpoints to access the network.
 
 |Endpoint|Port|Function|Method|Auth Reqd.|
 |---|---|---|---|---|
