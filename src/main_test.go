@@ -5,6 +5,11 @@ import (
 	"os"
 	"sync"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testTransaction struct {
@@ -24,13 +29,55 @@ func testLocalStore(transaction testTransaction) {
 	testTransactionByHash[fmt.Sprint(transaction.BlockHash)] = append(testTransactionByHash[fmt.Sprint(transaction.BlockHash)], &transaction)
 }
 
+const blockPattern = `{
+	"blockHash":"0x1929947310bd7aae9509b99f8986297969e7450e116712c85d9c77a959bb8037",
+	"blockNumber":"0x359f08",
+	"contractAddress":null,
+	"cumulativeGasUsed":"0x81ce3",
+	"from":"0x4ac11b6ed0f118414db41b41dade342368f925ca",
+	"gasUsed":"0x81ce3",
+	"logs":[
+	{"address":"0x6c88e07debd749476636ac4841063130df6c62bf",
+	"topics":["0xffa896d8919f0556f53ace1395617969a3b53ab5271a085e28ac0c4a3724e63d","0x0000000000000000000000000000000000000000000000000000000000067b69"],
+	"data":"0x",
+	"blockNumber":"0x359f08",
+	"transactionHash":"0xf79deb72c6eea1d89490cd4d4706bfb50e6d96700021ed79cee0238012b072d2",
+	"transactionIndex":"0x0","blockHash":"0x1929947310bd7aae9509b99f8986297969e7450e116712c85d9c77a959bb8037","logIndex":"0x0","removed":false}],
+	"logsBloom":"0x00000000000000000000000000000008000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000020000000001000000000000000000400000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+	"status":"0x1",
+	"to":"0x6c88e07debd749476636ac4841063130df6c62bf",
+	"transactionHash":"0xf79deb72c6eea1d89490cd4d4706bfb50e6d96700021ed79cee0238012b072d2",
+	"transactionIndex":"0x0"
+	}`
+
+type Receipt struct {
+	*types.Receipt
+	BlockNumber      int64
+	BlockHash        common.Hash
+	From             common.Address
+	To               common.Address
+	TransactionIndex uint64
+}
+
+func TestParseBlockNumberWith0x(t *testing.T) {
+	raw := []byte(blockPattern)
+
+	rec := &Receipt{
+		Receipt:     &types.Receipt{},
+		BlockNumber: 0,
+	}
+	err := rec.UnmarshalJSON(raw)
+	require.NoError(t, err)
+	assert.Equal(t, int64(3514120), rec.BlockNumber)
+}
+
 func TestLocalStorage(t *testing.T) {
 	testTransactionById = make(map[int]*testTransaction)
 	testTransactionByHash = make(map[string][]*testTransaction)
 	var testTransactionRow testTransaction
 	testTransactionRow = testTransaction{Id: 1, BlockHash: "0x547bd8bd5f9c8eee5d2be941f275ee95672632159b8981df7917335963642fbe", BlockNumber: "12232752", BlockTime: 1651499015, BlockNonce: 4627854504322470268, BlockNumTransactions: 8}
 	if testTransactionRow.Id != 1 {
-		fmt.Print("Ops")
+		t.Error("Fails")
 	}
 	testLocalStore(testTransactionRow)
 	testTransactionRow = testTransaction{Id: 3, BlockHash: "0xe441ec0412436c460e4430881ba24a6b1fc8cdb35e3d462a77bfd616021b79b1", BlockNumber: "12232754", BlockTime: 1651499051, BlockNonce: 8148927535907424638, BlockNumTransactions: 7}
