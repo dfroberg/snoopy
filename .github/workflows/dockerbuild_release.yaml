@@ -34,5 +34,5 @@ jobs:
         with:
           context: src
           push: true
-          tags: ${{ env.REGISTRY }}/dfroberg/snoopy:${{ env.RELEASE_VERSION }}
+          tags: dfroberg/snoopy:${{ env.RELEASE_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
