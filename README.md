@@ -39,8 +39,8 @@ $ go test -cover
 2022/05/04 16:05:02 Success! you connected to the ropsten Network
 2022/05/04 16:05:10 Got: {"Id":1,"BlockHash":"0x90d337977aa098f7f69b19fe29e09464486d725f58fa84b1ccdcb04246d74ada","BlockNumber":"14711389","BlockTime":1651673102,"BlockNonce":7604351258204595666,"BlockNumTransactions":134}
 PASS
-coverage: 25.0% of statements
-ok      snoopy/v2       8.318s
+coverage: 33.1% of statements
+ok      snoopy/v2       11.100s
 ~~~
 Quickly build and run the executable;
 ~~~
