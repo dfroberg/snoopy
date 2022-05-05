@@ -71,9 +71,9 @@ type TxData struct {
 	TxTo       string `json:"TxTo,omitempty"`
 }
 
-var TransactionById map[int]*Transaction
-var TransactionByNumber map[string][]*Transaction
-var TransactionByHash map[string][]*Transaction
+var TransactionById map[int]*Transaction = make(map[int]*Transaction)
+var TransactionByNumber map[string][]*Transaction = make(map[string][]*Transaction)
+var TransactionByHash map[string][]*Transaction = make(map[string][]*Transaction)
 
 func LocalStore(transaction Transaction) {
 	TransactionById[transaction.Id] = &transaction
@@ -108,10 +108,6 @@ func snoop(wg *sync.WaitGroup, maxBlocks int, ch1 chan bool) bool {
 	networkName := os.Getenv("SNOOPY_NETWORK_NAME")
 
 	if check_connect(projectID, networkName) {
-		TransactionById = make(map[int]*Transaction)
-		TransactionByHash = make(map[string][]*Transaction)
-		TransactionByNumber = make(map[string][]*Transaction)
-
 		client, err := ethclient.Dial("wss://" + networkName + ".infura.io/ws/v3/" + projectID)
 		if err != nil {
 			log.Fatal(err)
@@ -280,6 +276,7 @@ func (a *App) processSnoopStatsRequest(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
 		return
 	}
+	log.Println("Request: /")
 	// Reply with Stats
 	s, err := json.Marshal(allStats)
 	if err != nil {
@@ -322,7 +319,7 @@ func (a *App) processSnoopBlockIdRequest(w http.ResponseWriter, r *http.Request)
 		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
 		return
 	}
-	println(string(body))
+	log.Println("Request: " + string(body))
 	var pr ProcessSnoopBlockIdRequest
 	err = json.Unmarshal(body, &pr)
 	if err != nil {
@@ -351,7 +348,7 @@ func (a *App) processSnoopBlockNumberRequest(w http.ResponseWriter, r *http.Requ
 		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
 		return
 	}
-	println(string(body))
+	log.Println("Request: " + string(body))
 	var pr ProcessSnoopBlockNumberRequest
 	err = json.Unmarshal(body, &pr)
 	if err != nil {
@@ -380,7 +377,7 @@ func (a *App) processSnoopBlocksRequest(w http.ResponseWriter, r *http.Request) 
 		respondWithJSON(w, http.StatusBadRequest, map[string]string{"result": "false", "error": "Invalid Request"})
 		return
 	}
-
+	log.Println("Request: /blocks")
 	// Reply with All Transaction Blocks
 	s, err := json.Marshal(TransactionById)
 	if err != nil {
