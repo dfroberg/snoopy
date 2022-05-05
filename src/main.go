@@ -62,8 +62,8 @@ type Block struct {
 }
 
 var BlockById map[int]*Block = make(map[int]*Block)
-var BlockByNumber map[uint64][]*Block = make(map[uint64][]*Block)
-var BlockByHash map[string][]*Block = make(map[string][]*Block)
+var BlockByNumber map[uint64]*Block = make(map[uint64]*Block)
+var BlockByHash map[string]*Block = make(map[string]*Block)
 
 type Tx struct {
 	Id              int    `json:"Id,omitempty"`
@@ -81,10 +81,10 @@ type Tx struct {
 }
 
 var TxById map[int]*Tx = make(map[int]*Tx)
-var TxByTo map[string][]*Tx = make(map[string][]*Tx)
-var TxByHash map[string][]*Tx = make(map[string][]*Tx)
-var TxByBlockId map[int][]*Tx = make(map[int][]*Tx)
-var TxByBlockNumber map[uint64][]*Tx = make(map[uint64][]*Tx)
+var TxByTo map[string]*Tx = make(map[string]*Tx)
+var TxByHash map[string]*Tx = make(map[string]*Tx)
+var TxByBlockId map[int]*Tx = make(map[int]*Tx)
+var TxByBlockNumber map[uint64]*Tx = make(map[uint64]*Tx)
 
 type Filters struct {
 	Id   int    `json:"Id,omitempty"`
@@ -92,23 +92,23 @@ type Filters struct {
 }
 
 var FilterById map[int]*Filters = make(map[int]*Filters)
-var FilterByTxTo map[string][]*Filters = make(map[string][]*Filters)
+var FilterByTxTo map[string]*Filters = make(map[string]*Filters)
 
 func BlockStore(block Block) {
 	BlockById[block.Id] = &block
-	BlockByNumber[block.BlockNumber] = append(BlockByNumber[block.BlockNumber], &block)
-	BlockByHash[fmt.Sprint(block.BlockHash)] = append(BlockByHash[fmt.Sprint(block.BlockHash)], &block)
+	BlockByNumber[block.BlockNumber] = &block // append(BlockByNumber[block.BlockNumber], &block)
+	BlockByHash[fmt.Sprint(block.BlockHash)] = &block
 }
 func TxStore(tx Tx) {
 	TxById[tx.Id] = &tx
-	TxByTo[tx.TxTo] = append(TxByTo[tx.TxTo], &tx)
-	TxByBlockId[tx.TxBlockId] = append(TxByBlockId[tx.TxBlockId], &tx)
-	TxByBlockNumber[tx.TxBlockNumber] = append(TxByBlockNumber[tx.TxBlockNumber], &tx)
-	TxByHash[fmt.Sprint(tx.TxHash)] = append(TxByHash[fmt.Sprint(tx.TxHash)], &tx)
+	TxByTo[tx.TxTo] = &tx
+	TxByBlockId[tx.TxBlockId] = &tx
+	TxByBlockNumber[tx.TxBlockNumber] = &tx
+	TxByHash[fmt.Sprint(tx.TxHash)] = &tx
 }
 func FilterStore(filter Filters) {
 	FilterById[filter.Id] = &filter
-	FilterByTxTo[fmt.Sprint(filter.TxTo)] = append(FilterByTxTo[fmt.Sprint(filter.TxTo)], &filter)
+	FilterByTxTo[fmt.Sprint(filter.TxTo)] = &filter
 }
 
 func check_connect(projectID string, networkName string) bool {
@@ -235,8 +235,8 @@ func snoopProcessEvent(wgb *sync.WaitGroup, i int, client *ethclient.Client, sub
 		filters := FilterByTxTo
 		if len(filters) > 0 {
 			// Filters Exists
-			filter := FilterByTxTo[TxTo]
-			if len(filter) > 0 {
+			filter := FilterByTxTo[TxTo].Id
+			if filter > 0 {
 				log.Println("Matched: " + string(TxTo))
 				cTx := Tx{Id: ti, TxBlockId: i, TxBlockNumber: block.Number().Uint64(), TxHash: tx.Hash().Hex(), TxValue: tx.Value().Uint64(), TxGas: tx.Gas(), TxGasPrice: tx.GasPrice().Uint64(), TxCost: tx.Cost().Uint64(), TxNonce: tx.Nonce(), TxTo: TxTo, TxReceiptStatus: receipt.Status}
 				TxStore(cTx)

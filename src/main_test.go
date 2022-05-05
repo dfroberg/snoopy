@@ -2,18 +2,135 @@ package main
 
 import (
 	"os"
-	"sync"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestLocalStorage(t *testing.T) {
+const mockTransactions = `{
+	"1": {
+	  "Id": 1,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0xda6a3cce91baf1a4d8648fb659c6630078fae6a72ea12caff6aff975d92617c7",
+	  "TxValue": 1.5e+19,
+	  "TxGas": 393786,
+	  "TxGasPrice": 35792179968,
+	  "TxCost": 15014094459380880000,
+	  "TxNonce": 1018,
+	  "TxTo": "0x75A6787C7EE60424358B449B539A8b774c9B4862",
+	  "TxReceiptStatus": 1
+	},
+	"10": {
+	  "Id": 10,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0x8f2632a046d96c240b869b596bf750c427fc4d4808878e13ee5b33f7ca3dfbd3",
+	  "TxValue": 7e+17,
+	  "TxGas": 27938,
+	  "TxGasPrice": 29770083149,
+	  "TxCost": 700831716583016700,
+	  "TxNonce": 68,
+	  "TxTo": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+	  "TxReceiptStatus": 1
+	},
+	"100": {
+	  "Id": 100,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0xdf9d697b90c6d196d34359b0bdcccdaad05b57a460bbd66bdec88f9dd7227fb3",
+	  "TxValue": 15375963677623800,
+	  "TxGas": 21000,
+	  "TxGasPrice": 56000000000,
+	  "TxCost": 16551963677623800,
+	  "TxNonce": 1,
+	  "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e",
+	  "TxReceiptStatus": 1
+	},
+	"101": {
+	  "Id": 101,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0x1b54d0f0f28dd379ae7fa276011721c07c4f4470937db586a60b169059afb91f",
+	  "TxGas": 99367,
+	  "TxGasPrice": 36717479710,
+	  "TxCost": 3648505806343570,
+	  "TxNonce": 32034,
+	  "TxTo": "0x31eFc4AeAA7c39e54A33FDc3C46ee2Bd70ae0A09",
+	  "TxReceiptStatus": 1
+	},
+	"102": {
+	  "Id": 102,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0x895621d07cae4e66d98927fb972f69b41224ca637be6c9b3bfcc934d7e8c6ae0",
+	  "TxValue": 15376311699504468,
+	  "TxGas": 21000,
+	  "TxGasPrice": 56000000000,
+	  "TxCost": 16552311699504468,
+	  "TxNonce": 1,
+	  "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e",
+	  "TxReceiptStatus": 1
+	},
+	"103": {
+	  "Id": 103,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0x6e1052bd5745a300756cdfaa7fa63c75c672be57bd97898f40bf9c03e276053b",
+	  "TxGas": 60760,
+	  "TxGasPrice": 38530000000,
+	  "TxCost": 2341082800000000,
+	  "TxNonce": 65,
+	  "TxTo": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+	  "TxReceiptStatus": 1
+	},
+	"104": {
+	  "Id": 104,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0xd5daa38167d77104e3ddd3d00d09726a59f361c34f68a13454d895f51ba0df8d",
+	  "TxValue": 8477520000000000,
+	  "TxGas": 21000,
+	  "TxGasPrice": 56000000000,
+	  "TxCost": 9653520000000000,
+	  "TxNonce": 7015864,
+	  "TxTo": "0xF3929C9eED603E4617CF02908565f06963492B5d",
+	  "TxReceiptStatus": 1
+	},
+	"105": {
+	  "Id": 105,
+	  "TxBlockId": 22,
+	  "TxBlockNumber": 14717116,
+	  "TxHash": "0xa3ba2f4e45f63d4b0858d823227da50d923713844f56f4e89677dfd68d38b5ef",
+	  "TxGas": 81986,
+	  "TxGasPrice": 36717479710,
+	  "TxCost": 3010319291504060,
+	  "TxNonce": 79,
+	  "TxTo": "0x7f268357A8c2552623316e2562D90e642bB538E5",
+	  "TxReceiptStatus": 1
+	}`
+
+func loadMockTransactions() {
+	raw := []byte(mockTransactions)
+	rec := &Receipt{
+		Receipt:     &types.Receipt{},
+		BlockNumber: 0,
+	}
+	err := rec.UnmarshalJSON(mockTransactions)
+	require.NoError(t, err)
+	assert.Equal(t, int64(255), rec.BlockNumber)
+}
+func loadMockBlocks() {
 
 	var cBlockRow Block
 	cBlockRow = Block{Id: 1, BlockHash: "0x547bd8bd5f9c8eee5d2be941f275ee95672632159b8981df7917335963642fbe", BlockNumber: 12232752, BlockTime: 1651499015, BlockNonce: 4627854504322470268, BlockNumTransactions: 8}
 	BlockStore(cBlockRow)
-	assert.Equal(t, int(1), BlockById[1].Id)
 	cBlockRow = Block{Id: 3, BlockHash: "0xe441ec0412436c460e4430881ba24a6b1fc8cdb35e3d462a77bfd616021b79b1", BlockNumber: 12232754, BlockTime: 1651499051, BlockNonce: 8148927535907424638, BlockNumTransactions: 7}
 	BlockStore(cBlockRow)
 	cBlockRow = Block{Id: 4, BlockHash: "0x74c13672c717b3651f058d3f8a45cd0abd58c4bc9f4c33745f57ce37541062de", BlockNumber: 12232755, BlockTime: 1651499052, BlockNonce: 92853587781942119, BlockNumTransactions: 24}
@@ -65,28 +182,35 @@ func TestLocalStorage(t *testing.T) {
 	cBlockRow = Block{Id: 27, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: 12232778, BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
 	BlockStore(cBlockRow)
 
+}
+func TestLocalStorage(t *testing.T) {
+	loadMockBlocks()
 	// Check loaded Blocks
+	assert.Equal(t, int(1), BlockById[1].Id)
 	assert.Equal(t, int(22), BlockById[22].Id)
 }
 
-func TestIdAccess(t *testing.T) {
-	cBlockRow := Block{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: 12232778, BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
-	BlockStore(cBlockRow)
-	assert.Equal(t, int(4), cBlockRow.Id)
+func TestBlockIdAccess(t *testing.T) {
+	loadMockBlocks()
+	assert.Equal(t, int(4), BlockById[4].Id)
 }
 
-func TestHashAccess(t *testing.T) {
-	cBlockRow := Block{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: 12232778, BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
-	BlockStore(cBlockRow)
-	assert.Equal(t, string("0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0"), cBlockRow.BlockHash)
+func TestBlockHashAccess(t *testing.T) {
+	loadMockBlocks()
+	cBlock := BlockByHash["0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0"]
+	assert.Equal(t, string("0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0"), cBlock.BlockHash)
 }
 
 func TestBlockNumberAccess(t *testing.T) {
-	cBlockRow := Block{Id: 4, BlockHash: "0xd1ee549faee24058432f750a6f3aa5e5a96789b4bed29914da95e3b8c98b9ee0", BlockNumber: 12232778, BlockTime: 1651499823, BlockNonce: 1199686451859900871, BlockNumTransactions: 17}
-	BlockStore(cBlockRow)
-	assert.Equal(t, uint64(12232778), cBlockRow.BlockNumber)
+	loadMockBlocks()
+	cBlock := BlockByNumber[12232778]
+	assert.Equal(t, uint64(12232778), cBlock.BlockNumber)
 }
 
+func TestTxIdAccess(t *testing.T) {
+	loadMockBlocks()
+	assert.Equal(t, int(4), BlockById[4].Id)
+}
 func TestNetworkAccess(t *testing.T) {
 	projectID := os.Getenv("SNOOPY_PROJECT_ID")
 	networkName := os.Getenv("SNOOPY_NETWORK_NAME")
@@ -102,7 +226,7 @@ func TestDeleteFilter(t *testing.T) {
 
 // func TestSnoop(t *testing.T) {
 // 	var wg sync.WaitGroup
-// 	wg.Add(1)
+// 	wg.Add(2)
 // 	ch1 := make(chan bool)
 // 	// Run Snoop, collect 1 block and return
 // 	go snoop(&wg, 1, ch1)
@@ -110,17 +234,18 @@ func TestDeleteFilter(t *testing.T) {
 // 	assert.Equal(t, bool(true), r)
 // 	close(ch1)
 // }
-func TestSnoopWithFilter(t *testing.T) {
-	var wg sync.WaitGroup
-	wg.Add(2)
-	ch1 := make(chan bool)
-	// Run Snoop, collect 1 block and return
-	assert.Equal(t, bool(true), AddFilter("0x00000000219ab540356cbb839cbe05303d7705fa"))
-	go snoop(&wg, 10, ch1)
-	var r bool = <-ch1
-	assert.Equal(t, bool(true), r)
-	close(ch1)
-}
+
+// func TestSnoopWithFilter(t *testing.T) {
+// 	var wg sync.WaitGroup
+// 	wg.Add(2)
+// 	ch1 := make(chan bool)
+// 	// Run Snoop, collect 1 block and return
+// 	assert.Equal(t, bool(true), AddFilter("0x00000000219ab540356cbb839cbe05303d7705fa"))
+// 	go snoop(&wg, 10, ch1)
+// 	var r bool = <-ch1
+// 	assert.Equal(t, bool(true), r)
+// 	close(ch1)
+// }
 func TestMain(t *testing.T) {
 	a := App{}
 	a.Initialize()
