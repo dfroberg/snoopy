@@ -8,7 +8,7 @@ common:
 snoopy:
   image:
     repository: "dfroberg/snoopy"
-    tag: "v0.6.8"
+    tag: "v0.6.10"
     pullPolicy: "Always"
   # -- Environment vars to set
   env:
