@@ -10,9 +10,18 @@ Snoopy subscribes to events on the Ethereum network you specify and spits out st
 |/health|9080|Cluster liveness probe endpoint|GET|No|
 |/ping|9080|Pongs if alive|GET|No|
 |/|9080|returns stats on snooped blocks|GET|Token|
+|/blocks|9080|Return dump of block|GET|Token|
 |/blockid|9080|Return dump of block with internal id|POST|Token|
 |/blockhash|9080|Return dump of block with hash|POST|Token|
 |/blocknumber|9080|Return dump of block with number|POST|Token|
+|/txs|9080|Return dump of transactions|GET|Token|
+|/txid|9080|Return dump of transaction with internal id|POST|Token|
+|/txnumber|9080|Return dump of transaction in blocknumber number|POST|Token|
+|/filters|9080|Return dump of filters|GET|Token|
+|/filteradd|9080|Add a TxTo address filter|POST|Token|
+|/filterdelete|9080|Remove a TxTo address filter|POST|Token|
+|/filterid|9080|Return filter matching filter id|POST|Token|
+|/filterto|9080|Return filter matching TxTo|POST|Token|
 |/metrics|2112|Prometheus metrics endpoint|GET|No|
 
 # Some ideas:
@@ -281,7 +290,7 @@ curl -s -H "X-Token: TestToken" -d '{"Hash": "0xd92a881dd3e68c25fc78e9495f200e4e
 ~~~
 ## Get Block Data by Number
 ~~~
-curl -s -H "X-Token: TestToken" -d '{"Number": "14711278"}' http://localhost:9080/blocknumber | jq
+curl -s -H "X-Token: TestToken" -d '{"Number": 14711278}' http://localhost:9080/blocknumber | jq
 ~~~
 ~~~
 [
@@ -294,6 +303,148 @@ curl -s -H "X-Token: TestToken" -d '{"Number": "14711278"}' http://localhost:908
     "BlockNumTransactions": 32
   }
 ]
+~~~
+## Get Transactions
+~~~
+curl -s -H "X-Token: TestToken" http://localhost:9080/txs | jq
+~~~
+~~~
+{
+  "1": {
+    "Id": 1,
+    "TxBlockId": 22,
+    "TxBlockNumber": 14717116,
+    "TxHash": "0xda6a3cce91baf1a4d8648fb659c6630078fae6a72ea12caff6aff975d92617c7",
+    "TxValue": 1.5e+19,
+    "TxGas": 393786,
+    "TxGasPrice": 35792179968,
+    "TxCost": 15014094459380880000,
+    "TxNonce": 1018,
+    "TxTo": "0x75A6787C7EE60424358B449B539A8b774c9B4862",
+    "TxReceiptStatus": 1
+  },
+  ...
+  "99": {
+    "Id": 99,
+    "TxBlockId": 22,
+    "TxBlockNumber": 14717116,
+    "TxHash": "0x5f1406e75002398534d874d0392ad52a14cb983aab213856b91f2ed757a9fa7c",
+    "TxValue": 15375963677623800,
+    "TxGas": 21000,
+    "TxGasPrice": 56000000000,
+    "TxCost": 16551963677623800,
+    "TxNonce": 1,
+    "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e",
+    "TxReceiptStatus": 1
+  }
+}
+~~~
+## Get Transaction Data by Id
+~~~
+curl -s -H "X-Token: TestToken" -d '{"Id": 1}' http://localhost:9080/txid | jq
+~~~
+~~~
+{
+  "Id": 1,
+  "TxBlockId": 20,
+  "TxBlockNumber": 14717114,
+  "TxHash": "0x55bcc6f4fdf880ff81612da123c1795e798cc82cb559bdd8a70a347100820533",
+  "TxGas": 50000,
+  "TxGasPrice": 50000000000,
+  "TxCost": 2500000000000000,
+  "TxNonce": 4,
+  "TxTo": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  "TxReceiptStatus": 1
+}
+~~~
+## Get Transaction Data by Block Number
+~~~
+curl -s -H "X-Token: TestToken" -d '{"Number": 14717097}' http://localhost:9080/txnumber | jq
+~~~
+~~~
+[
+  {
+    "Id": 1,
+    "TxBlockId": 3,
+    "TxBlockNumber": 14717097,
+    "TxHash": "0x9c628cb1623b22d4886786f61f23dedd950d25a3897f5852b61cf863b64a401e",
+    "TxGas": 700000,
+    "TxGasPrice": 51200000000,
+    "TxCost": 35840000000000000,
+    "TxNonce": 147495,
+    "TxTo": "0x0000006daea1723962647b7e189d311d757Fb793",
+    "TxReceiptStatus": 1
+  },
+  ...
+  {
+    "Id": 211,
+    "TxBlockId": 3,
+    "TxBlockNumber": 14717097,
+    "TxHash": "0x43608849e0ffff749426b70a68700377308647df69bfdb8a915786ff92c94d0e",
+    "TxValue": 33389713214078600,
+    "TxGas": 80000,
+    "TxGasPrice": 58988117698,
+    "TxCost": 38108762629918600,
+    "TxNonce": 1,
+    "TxTo": "0x2a67035357C3045438F3A92E46870a9E48e5AAB7",
+    "TxReceiptStatus": 1
+  }
+]
+~~~
+## Get Filters
+~~~
+curl -s -H "X-Token: TestToken" http://localhost:9080/filters | jq
+~~~
+~~~
+{
+  "0": {
+    "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"
+  }
+}
+~~~
+## Add Filter
+~~~
+curl -s -H "X-Token: TestToken" -d '{"To": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"}' http://localhost:9080/filteradd | jq
+~~~
+~~~
+[
+  {
+    "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"
+  }
+]
+~~~
+## Get Filter by To
+return null on not found
+~~~
+curl -s -H "X-Token: TestToken" -d '{"To": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"}' http://localhost:9080/filterto | jq
+~~~
+~~~
+[
+  {
+    "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"
+  }
+]
+~~~
+## Get Filter by ID
+return null on not found
+~~~
+curl -s -H "X-Token: TestToken" -d '{"Id": 1}' http://localhost:9080/filterid | jq
+~~~
+~~~
+[
+  {
+    "TxTo": "0xA090e606E30bD747d4E6245a1517EbE430F0057e"
+  }
+]
+~~~
+## Delete Filter
+~~~
+curl -s -H "X-Token: TestToken" -d '{"Id": 1}' http://localhost:9080/filterdelete | jq
+~~~
+~~~
+{
+  "result": "true"
+}
 ~~~
 ## Healtcheck
 ~~~
