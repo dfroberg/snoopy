@@ -25,7 +25,7 @@ Snoopy subscribes to events on the Ethereum network you specify and spits out st
 |/metrics|2112|Prometheus metrics endpoint|GET|No|
 
 # Some ideas:
-* To make this little widget useful, add filters for To/From so you can capture events related to something that matters to YOU, i.e. your wallet address or some payment destination.
+* WIP: To make this little widget useful, add filters for To/From so you can capture events related to something that matters to YOU, i.e. your wallet address or some payment destination.
 ## Set it up
 Register for an [INFURA Project ID](https://infura.io/register)
 You will have to use this key for subsequent requests to INFURA endpoints,
