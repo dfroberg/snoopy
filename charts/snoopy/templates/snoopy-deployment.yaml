@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snoopy
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app: snoopy
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+spec:
+  selector:
+    matchLabels:
+      app: snoopy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: snoopy
+    spec:
+      containers:
+        - name: snoopy
+          image: "{{ .Values.snoopy.image.repository | default "dfroberg/snoopy" }}:{{ .Values.snoopy.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.snoopy.image.pullPolicy | default "IfNotPresent" }}
+          resources:
+            {{- toYaml .Values.snoopy.resources | nindent 12 }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SNOOPY_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: common-snoopy-secret
+                  key: SNOOPY_API_TOKEN
+            - name: SNOOPY_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: common-snoopy-secret
+                  key: SNOOPY_PROJECT_ID
+            - name: SNOOPY_NETWORK_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: snoopy-config-map
+                  key: SNOOPY_NETWORK_NAME
+            {{- with .Values.snoopy.env }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 1

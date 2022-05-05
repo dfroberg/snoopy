@@ -4,4 +4,4 @@
 # Test binary, build with `go test -c`
 *.test
 *.out
-snoopy
+/src/snoopy

@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-snoopy-up"
+  namespace: "{{ .Release.Namespace }}"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  containers:
+    - name: "{{ .Release.Name }}-test-snoopy-up"
+      image: curlimages/curl
+      command:
+        - /bin/sh
+        - -ec
+        - |
+          echo -e "► Starting tests"
+          TEST_HOST=snoopy-service:9080
+          TEST_PATHS=$(cat <<'EOT'
+          health
+          ping
+          EOT
+          )
+          TMPF="/tmp/content.txt"
+          touch $TMPF
+          if test -f "$TMPF"; then
+            echo "  Buffer file $TMPF exists."
+          else
+            echo "  Can't create buffer file $TMPF aborting tests."
+            exit 1
+          fi
+          echo -e "► Testing API Endpoints:"
+          for p in $TEST_PATHS
+          do
+            TEST_URL="http://${TEST_HOST}/${p}"
+            echo -e -n "► Testing ${TEST_URL} ..."
+            HTTP_STATUS=""
+            HTTP_STATUS=$(curl -k -L -X GET -q --max-time 5 -s -w '%{http_code}' -o ${TMPF} ${TEST_URL})
+            CONTENT=$(< ${TMPF})
+            if [ $HTTP_STATUS -ne 200 ]
+            then
+                echo -e " X Failed [$HTTP_STATUS]"
+                echo -e "  Got: $CONTENT"
+                exit 1
+            else
+                echo -e " ✔ Passed [$HTTP_STATUS]"
+                echo -e "  ---\n  $CONTENT\n  ---"
+            fi
+            echo -e "  ✔ Done"
+          done
+          echo -e "► Testing snoopy: Making a call"
+          for p in "blocks"
+          do
+            TEST_URL="http://$TEST_HOST/$p"
+            echo -e -n "► Calling $TEST_URL ..."
+            HTTP_STATUS=""
+            HTTP_STATUS=$(curl -k -L -X POST -H 'X-Token: TestToken' -q --max-time 5 -s -w '%{http_code}' -o ${TMPF} ${TEST_URL})
+            CONTENT=$(< ${TMPF})
+            if [ $HTTP_STATUS -ne 200 ]
+            then
+                echo -e " X Failed [$HTTP_STATUS]"
+                echo -e "  Got: $CONTENT"
+                exit 1
+            else
+                echo -e " ✔ Passed [$HTTP_STATUS]"
+                echo -e "  ---\n  $CONTENT\n  ---"
+            fi
+            echo -e "  ✔ Done"
+          done
+          echo -e "► Testing API Endpoints again:"
+          for p in $TEST_PATHS
+          do
+            TEST_URL="http://${TEST_HOST}/${p}"
+            echo -e -n "► Testing ${TEST_URL} ..."
+            HTTP_STATUS=""
+            HTTP_STATUS=$(curl -k -L -X GET -q --max-time 5 -s -w '%{http_code}' -o ${TMPF} ${TEST_URL})
+            CONTENT=$(< ${TMPF})
+            if [ $HTTP_STATUS -ne 200 ]
+            then
+                echo -e " X Failed [$HTTP_STATUS]"
+                echo -e "  Got: $CONTENT"
+                exit 1
+            else
+                echo -e " ✔ Passed [$HTTP_STATUS]"
+                echo -e "  ---\n  $CONTENT\n  ---"
+            fi
+            echo -e "  ✔ Done"
+          done
+          echo -e "✔ All Tests Done"
+  restartPolicy: Never
