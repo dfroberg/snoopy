@@ -71,9 +71,9 @@ type TxData struct {
 	TxTo       string `json:"TxTo,omitempty"`
 }
 
-var TransactionById map[int]*Transaction
-var TransactionByNumber map[string][]*Transaction
-var TransactionByHash map[string][]*Transaction
+var TransactionById map[int]*Transaction = make(map[int]*Transaction)
+var TransactionByNumber map[string][]*Transaction = make(map[string][]*Transaction)
+var TransactionByHash map[string][]*Transaction = make(map[string][]*Transaction)
 
 func LocalStore(transaction Transaction) {
 	TransactionById[transaction.Id] = &transaction
@@ -108,10 +108,6 @@ func snoop(wg *sync.WaitGroup, maxBlocks int, ch1 chan bool) bool {
 	networkName := os.Getenv("SNOOPY_NETWORK_NAME")
 
 	if check_connect(projectID, networkName) {
-		TransactionById = make(map[int]*Transaction)
-		TransactionByHash = make(map[string][]*Transaction)
-		TransactionByNumber = make(map[string][]*Transaction)
-
 		client, err := ethclient.Dial("wss://" + networkName + ".infura.io/ws/v3/" + projectID)
 		if err != nil {
 			log.Fatal(err)

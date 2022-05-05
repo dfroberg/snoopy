@@ -453,7 +453,19 @@ promhttp_metric_handler_requests_in_flight 1
 promhttp_metric_handler_requests_total{code="200"} 2
 promhttp_metric_handler_requests_total{code="500"} 0
 promhttp_metric_handler_requests_total{code="503"} 0
+# HELP snoopy_processed_apicalls_total The total number of processed api calls
+# TYPE snoopy_processed_apicalls_total counter
+snoopy_processed_apicalls_total 2
+# HELP snoopy_processed_blocks_total The total number of processed blocks
+# TYPE snoopy_processed_blocks_total counter
+snoopy_processed_blocks_total 8
 # HELP snoopy_processed_events_total The total number of processed events
 # TYPE snoopy_processed_events_total counter
-snoopy_processed_events_total 3
+snoopy_processed_events_total 8
+# HELP snoopy_processed_requests_total The total number of processed requests
+# TYPE snoopy_processed_requests_total counter
+snoopy_processed_requests_total 3
+# HELP snoopy_processed_transactions_total The total number of processed transactions
+# TYPE snoopy_processed_transactions_total counter
+snoopy_processed_transactions_total 1543
 ~~~
