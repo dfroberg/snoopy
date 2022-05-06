@@ -46,7 +46,7 @@ helm test snoopy --namespace snoopy
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | common | object | `{"snoopyApiToken":"TestToken"}` | Common values for all services |
-| common.snoopyApiToken | string | `"TestToken"` | This is optional, will be pupulated by a random string if not defined or already present in a secret. |
+| common.snoopyApiToken | string | `"TestToken"` | This is optional, will be populated by a random string if not defined or already present in a secret. |
 | snoopy | object | `{"env":[{"name":"TZ","value":"Europe/Stockholm"}],"image":{"pullPolicy":"Always","repository":"dfroberg/pleo-snoopy","tag":"latest"},"ingress":{"annotations":{},"domain":{"base":"snoopy.local","prefix":"","suffix":""},"enabled":true,"ingressClassName":"traefik","labels":{}},"resources":{"limits":{"memory":"1024Mi"},"requests":{"memory":"1024Mi"}},"service":{"port":9080},"metrics":{"enabled":true,"port":2112}}` | Values for snoopy service |
 | snoopy.env | list | `[{"name":"TZ","value":"Europe/Stockholm"}]` | Environment vars to set |
 | snoopy.ingress.enabled | bool | `true` | Enable ingress |
