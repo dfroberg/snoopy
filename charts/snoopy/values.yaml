@@ -1,14 +1,15 @@
 ---
-# -- Common values for all services
 common:
   # -- This is optional, will be pupulated by a random string if not defined or already present in a secret.
   snoopyApiToken: TestToken
 
-# -- Values for snoopy service
 snoopy:
   image:
+    # -- Image Reposistory
     repository: "dfroberg/snoopy"
+    # -- Image Tag
     tag: "v0.6.14"
+    # -- Image pullPolicy
     pullPolicy: "Always"
   # -- Environment vars to set
   env:
