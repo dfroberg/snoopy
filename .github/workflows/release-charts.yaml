@@ -3,10 +3,10 @@ name: Release Charts
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - 'charts/*/templates/**'
-      - 'charts/*/*.yaml'
+      - 'charts/*/**'
 
 jobs:
   release:
