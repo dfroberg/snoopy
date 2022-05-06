@@ -3,7 +3,7 @@ name: Release Charts
 on:
   pull_request:
     branches:
-      - main
+      - mainXXX
     paths:
       - 'charts/*/templates/**'
       - 'charts/*/**'
