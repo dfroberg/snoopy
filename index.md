@@ -20,7 +20,6 @@ helm upgrade snoopy snoopy/snoopy \
       --wait \
       --set snoopy.image.tag=latest \
       --set snoopy.ingress.enabled=true \
-      --set snoopy.ingress.domain.prefix="" \
       --set snoopy.ingress.domain.base=snoopy.local \
       --set snoopy.metrics.enabled=true
 ~~~
@@ -47,7 +46,6 @@ helm test snoopy --namespace snoopy
 |-----|------|---------|-------------|
 | common | object | `{"snoopyApiToken":"TestToken"}` | Common values for all services |
 | common.snoopyApiToken | string | `"TestToken"` | This is optional, will be populated by a random string if not defined or already present in a secret. |
-| snoopy | object | `{"env":[{"name":"TZ","value":"Europe/Stockholm"}],"image":{"pullPolicy":"Always","repository":"dfroberg/snoopy","tag":"latest"},"ingress":{"annotations":{},"domain":{"base":"snoopy.local","prefix":"","suffix":""},"enabled":true,"ingressClassName":"traefik","labels":{}},"resources":{"limits":{"memory":"1024Mi"},"requests":{"memory":"1024Mi"}},"service":{"port":9080},"metrics":{"enabled":true,"port":2112}}` | Values for snoopy service |
 | snoopy.env | list | `[{"name":"TZ","value":"Europe/Stockholm"}]` | Environment vars to set |
 | snoopy.ingress.enabled | bool | `true` | Enable ingress |
 | snoopy.ingress.annotations | object | `{}` | Ingress annotations |

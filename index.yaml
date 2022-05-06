@@ -26,29 +26,4 @@ entries:
     urls:
     - https://github.com/dfroberg/snoopy/releases/download/snoopy-0.6.15/snoopy-0.6.15.tgz
     version: 0.6.15
-  - apiVersion: v2
-    appVersion: v0.6.14
-    created: "2022-05-06T11:21:57.4726448+02:00"
-    description: 'Snoopy subscribes to events on the Ethereum network you specify
-      and spits out stats and information about blocks it has gathered since it started.  ---  How
-      to get it;  ~~~  helm repo add snoopy https://dfroberg.github.io/snoopy/  helm
-      repo update  ~~~  Take a look;  ~~~  helm search repo snoopy  ~~~  How to install
-      it;  ~~~  helm upgrade snoopy snoopy/snoopy \       --install \       --namespace
-      snoopy \       --create-namespace \       --wait \       --set snoopy.image.tag=latest
-      \       --set snoopy.ingress.enabled=true \       --set snoopy.ingress.domain.prefix=""
-      \       --set snoopy.ingress.domain.base=snoopy.local \       --set snoopy.metrics.enabled=true  ~~~  How
-      to test it;  ~~~  helm test snoopy --namespace snoopy  ~~~ '
-    digest: 2dd716825fefc1dfb50354b80628923ad3d2c197df64b0a49d541765d6ef5ba3
-    home: https://github.com/dfroberg/snoopy
-    icon: https://cdn-images-1.medium.com/max/1600/1*-9mb3AKnKdcL_QD3CMnthQ.png
-    maintainers:
-    - email: danny@froberg.org
-      name: dfroberg
-    name: snoopy
-    sources:
-    - https://github.com/dfroberg/snoopy/tree/master/snoopy
-    type: application
-    urls:
-    - https://github.com/dfroberg/snoopy/releases/download/0.2.0/snoopy-0.2.0.tgz
-    version: 0.2.0
 generated: "2022-05-06T11:23:29.172354673Z"
