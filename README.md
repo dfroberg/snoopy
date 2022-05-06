@@ -94,7 +94,7 @@ Please adjust the ingress!
 If it's a local domain adjust your /etc/hosts to point to your ingress controller IP or annotations to match your environment otherwise.
 
 # Load Test
-This app manages a measly 34 rps (mean) on the /blocks and  389.98 rps (mean) on the /health endpoint in kuberenetes, this is more than likely du to my local infrastructure rather than anything else, as it gets 1912.50 rps(mean) on localhost on the same endpoint and 18313.34 rps (mean) on / (stats) and 23187.33 rps (mean) on /health;
+This app manages a measly 34 rps (mean) on the /blocks and  389.98 rps (mean) on the /health endpoint in kubernetes, this is more than likely du to my local infrastructure rather than anything else, as it gets 1912.50 rps(mean) on localhost on the same endpoint and 18313.34 rps (mean) on / (stats) and 23187.33 rps (mean) on /health;
 
 ## Localhost
 ~~~
