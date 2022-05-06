@@ -1,6 +1,6 @@
 Thank you for installing {{ .Chart.Name }}.
 
-Your release is named {{ .Release.Name }}.
+Your release is named {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
 
 To learn more about the release, try:
 
@@ -8,4 +8,12 @@ To learn more about the release, try:
   $ helm get all {{ .Release.Name }}
 
 The API token to talk to the service is;
-  {{ include "common.snoopy-api-token" . | b64enc }}
+  {{ common.snoopy-api-token }}
+
+To test if it's alive try the below curls.
+
+If you have an ingress defined;
+curl -L -s -X GET -H "X-Token: {{ common.snoopy-api-token }}" http://{{ ingress.hostName }}/ | jq
+
+If you have an portforward to the service port defined;
+curl -L -s -X GET -H "X-Token: {{ common.snoopy-api-token }}" http://localhost:{{ .Values.snoopy.service.port | default 9080 }}/ | jq
