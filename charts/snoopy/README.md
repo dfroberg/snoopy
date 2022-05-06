@@ -9,11 +9,13 @@ How to get it;
 helm repo add snoopy https://dfroberg.github.io/snoopy/
 helm repo update
 ~~~
-Take a look;
+Now find it;
 ~~~
 helm search repo snoopy
 ~~~
 How to install it;
+
+Replace snoopy.ingress.domain.base with your FQDN.
 ~~~
 helm upgrade snoopy snoopy/snoopy \
       --install \
@@ -22,7 +24,6 @@ helm upgrade snoopy snoopy/snoopy \
       --wait \
       --set snoopy.image.tag=latest \
       --set snoopy.ingress.enabled=true \
-      --set snoopy.ingress.domain.prefix="" \
       --set snoopy.ingress.domain.base=snoopy.local \
       --set snoopy.metrics.enabled=true
 ~~~
