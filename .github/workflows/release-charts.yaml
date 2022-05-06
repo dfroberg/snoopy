@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - 'charts/*/templates/**'
-      - 'charts/*/*.yaml'
+      - 'charts/*/**'
 
 jobs:
   release:
