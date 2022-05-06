@@ -15,7 +15,10 @@ helm search repo snoopy
 ~~~
 How to install it;
 
+*Note*
 Replace snoopy.ingress.domain.base with your FQDN.
+It's recommended to pin the image to a specific release,
+check the release pages for available tags. i.e. v0.6.14
 ~~~
 helm upgrade snoopy snoopy/snoopy \
       --install \
