@@ -4,8 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/*/**'
-      - 'manifests/*/**'
+      - 'src/**/*'
     types: [closed]
 jobs:
   release-on-push:
