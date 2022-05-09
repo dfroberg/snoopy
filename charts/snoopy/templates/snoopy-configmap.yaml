@@ -10,4 +10,4 @@ metadata:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
 data:
-  SNOOPY_NETWORK_NAME: {{- .Values.snoopy.networkname | default "mainnet" }}
+  SNOOPY_NETWORK_NAME: {{ .Values.snoopy.networkName | default "mainnet" }}

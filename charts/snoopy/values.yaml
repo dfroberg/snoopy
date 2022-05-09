@@ -1,8 +1,11 @@
 ---
 common:
-  # -- This is optional, will be pupulated by a random string if not defined or already present in a secret.
+  # -- This is optional, will be populated by a random string if not defined or already present in a secret.
   snoopyApiToken: TestToken
+  # -- Required: Infura Project ID
   projectId: YouForgotToSetYourProjectId
+  # -- Required: Ethereum Network to listen on
+  networkName: mainnet
 
 snoopy:
   image:

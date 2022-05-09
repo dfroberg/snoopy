@@ -1,6 +1,8 @@
 ---
 common:
   snoopyApiToken: TestToken
+  projectId: YouForgotToSetYourProjectId
+  networkName: ropsten
 
 snoopy:
   image:
