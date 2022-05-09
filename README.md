@@ -60,6 +60,36 @@ Starts the snooping on whatever net you've specified above in the ENV's
 Use the curl commands below in Endpoints to test.
 
 # Deploy
+## Helm
+More documentation is available at; https://dfroberg.github.io/snoopy/
+
+Add the Helm repo;
+~~~
+helm repo add snoopy https://dfroberg.github.io/snoopy/
+helm repo update
+~~~
+Find the latest release;
+~~~
+helm search repo snoopy
+~~~
+Example on how to install it;
+~~~
+helm upgrade snoopy snoopy/snoopy \
+      --install \
+      --namespace snoopy \
+      --create-namespace \
+      --wait \
+      --set snoopy.image.tag=latest \
+      --set snoopy.ingress.enabled=true \
+      --set snoopy.ingress.domain.base=snoopy.local \
+      --set snoopy.metrics.enabled=true
+~~~
+Run the tests;
+~~~
+helm test snoopy --namespace snoopy
+~~~
+It should be available via your ingress.
+## Manual Kubernetes Manifests
 ~~~
 export SNOOPY_PROJECT_ID=<INFURA PRODUCTION PROJECT ID>
 export SNOOPY_NETWORK_NAME=mainnet
