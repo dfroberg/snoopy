@@ -18,7 +18,7 @@ How to install it;
 *Note*
 Replace snoopy.ingress.domain.base with your FQDN.
 It's recommended to pin the image to a specific release,
-check the release pages for available tags. i.e. v0.6.14
+check the release pages for available tags. i.e. v0.6.18
 ~~~
 helm upgrade snoopy snoopy/snoopy \
       --install \
@@ -53,14 +53,14 @@ helm test snoopy --namespace snoopy
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| common | object | `{"snoopyApiToken":"TestToken"}` | Common values for all services |
-| common.snoopyApiToken | string | `"TestToken"` | This is optional, will be pupulated by a random string if not defined or already present in a secret. |
-| snoopy | object | `{"env":[{"name":"TZ","value":"Europe/Stockholm"}],"image":{"pullPolicy":"Always","repository":"dfroberg/snoopy","tag":"latest"},"ingress":{"annotations":{},"domain":{"base":"snoopy.local","prefix":"","suffix":""},"enabled":true,"ingressClassName":"traefik","labels":{}},"resources":{"limits":{"memory":"1024Mi"},"requests":{"memory":"1024Mi"}},"service":{"port":9080},"metrics":{"enabled":true,"port":2112}}` | Values for snoopy service |
+| common.snoopyApiToken | string | `"TestToken"` | This is optional, will be populated by a random string if not defined or already present in a secret. |
+| common.projectId | string | `"YouForgotToSetYourProjectId"` | Required: Infura Project ID |
+| common.networkName | string | `"mainnet"` |  Required: Ethereum Network to listen on |
 | snoopy.env | list | `[{"name":"TZ","value":"Europe/Stockholm"}]` | Environment vars to set |
 | snoopy.ingress.enabled | bool | `true` | Enable ingress |
 | snoopy.ingress.annotations | object | `{}` | Ingress annotations |
 | snoopy.ingress.labels | object | `{}` | Ingress labels |
-| snoopy.ingress.ingressClassName | string | `"traefik"` | IngressClassname |
+| snoopy.ingress.ingressClassName | string | `"traefik"` | IngressClassName |
 | snoopy.ingress.domain | object | `{"base":"snoopy.local","prefix":"","suffix":""}` | Build host string |
 | snoopy.service.port | int | `9080` | Port number (Defaults to 9080) |
 | snoopy.metrics.enabled | bool | `true` | Enable if you wish to enable prometheus metrics |
