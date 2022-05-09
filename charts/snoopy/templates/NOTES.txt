@@ -8,12 +8,12 @@ To learn more about the release, try:
   $ helm get all {{ .Release.Name }}
 
 The API token to talk to the service is;
-  {{ include "common.snoopy-api-token" . | b64enc }}
+  {{ include "common.snoopy-api-token" . | b64dec }}
 
 To test if it's alive try the below commands.
 
 If you have an ingress defined;
-curl -L -s -X GET -H "X-Token: {{ include "common.snoopy-api-token" . | b64enc }}" http://{{ include "ingress.hostName" . }}/ | jq
+curl -L -s -X GET -H "X-Token: {{ include "common.snoopy-api-token" . | b64dec }}" http://{{ include "ingress.hostName" . }}/ | jq
 
 If you have an portforward to the service port defined;
-curl -L -s -X GET -H "X-Token: {{ include "common.snoopy-api-token" . | b64enc }}" http://localhost:{{ .Values.snoopy.service.port | default 9080 }}/ | jq
+curl -L -s -X GET -H "X-Token: {{ include "common.snoopy-api-token" . | b64dec }}" http://localhost:{{ .Values.snoopy.service.port | default 9080 }}/ | jq
