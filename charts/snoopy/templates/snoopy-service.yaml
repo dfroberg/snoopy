@@ -16,7 +16,7 @@ spec:
     port: {{ .Values.snoopy.service.port | default 9080 }}
     protocol: TCP
   - name: metrics
-    port: {{ .Values.metrics.service.port | default 9080 }}
+    port: {{ .Values.snoopy.metrics.port | default 9080 }}
     protocol: TCP
   selector:
     app: snoopy

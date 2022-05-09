@@ -82,7 +82,9 @@ helm upgrade snoopy snoopy/snoopy \
       --set snoopy.image.tag=latest \
       --set snoopy.ingress.enabled=true \
       --set snoopy.ingress.domain.base=snoopy.local \
-      --set snoopy.metrics.enabled=true
+      --set snoopy.metrics.enabled=true \
+      --set common.snoopyApiToken=TestToken \
+      --set common.projectId=<Your Infura project ID>
 ~~~
 Run the tests;
 ~~~
@@ -97,7 +99,7 @@ export SNOOPY_API_TOKEN=TestToken
 export SNOOPY_NAMESPACE=snoopy
 export SNOOPY_INGRESS_CLASS=traefik
 export SNOOPY_INGRESS_HOST=snoopy.local
-export SNOOPY_VERSION=v0.6.4
+export SNOOPY_VERSION=v0.6.15
 ~~~
 Create the snoopy namespace;
 ~~~

@@ -2,6 +2,7 @@
 common:
   # -- This is optional, will be pupulated by a random string if not defined or already present in a secret.
   snoopyApiToken: TestToken
+  projectId: YouForgotToSetYourProjectId
 
 snoopy:
   image:
