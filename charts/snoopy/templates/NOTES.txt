@@ -10,7 +10,7 @@ To learn more about the release, try:
 The API token to talk to the service is;
   {{ include "common.snoopy-api-token" . | b64enc }}
 
-To test if it's alive try the below curls.
+To test if it's alive try the below commands.
 
 If you have an ingress defined;
 curl -L -s -X GET -H "X-Token: {{ include "common.snoopy-api-token" . | b64enc }}" http://{{ ingress.hostName }}/ | jq
