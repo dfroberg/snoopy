@@ -5,7 +5,7 @@ common:
 snoopy:
   image:
     repository: "dfroberg/snoopy"
-    tag: "v0.6.8"
+    tag: "v0.6.15"
     pullPolicy: "Always"
   env:
     - name: "TZ"

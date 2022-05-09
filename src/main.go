@@ -636,7 +636,7 @@ func (a *App) snoopFilterAddToRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 	}
-	log.Println("Added: " + string(s))
+	log.Println("Added Filter: " + string(s))
 	respondWithJSON(w, http.StatusOK, FilterByTxTo[pr.To])
 }
 func (a *App) snoopFilterDeleteIdRequest(w http.ResponseWriter, r *http.Request) {
@@ -662,7 +662,7 @@ func (a *App) snoopFilterDeleteIdRequest(w http.ResponseWriter, r *http.Request)
 	DeleteFilter(pr.Id)
 
 	// Reply with Block Data
-	log.Println("Deleted: Filter " + fmt.Sprint(pr.Id))
+	log.Println("Deleted Filter " + fmt.Sprint(pr.Id))
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "true"})
 }
 
