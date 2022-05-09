@@ -10,7 +10,10 @@ on:
 
 jobs:
   release:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
