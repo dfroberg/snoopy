@@ -3,6 +3,31 @@ entries:
   snoopy:
   - apiVersion: v2
     appVersion: v0.6.15
+    created: "2022-05-09T11:20:52.242091726Z"
+    description: 'Snoopy subscribes to events on the Ethereum network via Infura nodes
+      that you specify and spits out stats and information about blocks it has gathered
+      since it started. '
+    digest: cc56e19ac4cdc360fc26ea6ad7bd3c0fe1e5a9fa6a52997b7c42fbb45815def0
+    home: https://github.com/dfroberg/snoopy
+    icon: https://octodex.github.com/images/jetpacktocat.png
+    keywords:
+    - ethereum
+    - kubernetes
+    - infura
+    kubeVersion: '>= 1.20.0 < 1.24.0'
+    maintainers:
+    - email: danny@froberg.org
+      name: dfroberg
+      url: https://github.com/dfroberg
+    name: snoopy
+    sources:
+    - https://github.com/dfroberg/snoopy/tree/master/snoopy
+    type: application
+    urls:
+    - https://github.com/dfroberg/snoopy/releases/download/snoopy-0.6.18/snoopy-0.6.18.tgz
+    version: 0.6.18
+  - apiVersion: v2
+    appVersion: v0.6.15
     created: "2022-05-09T10:47:51.154779916Z"
     description: 'Snoopy subscribes to events on the Ethereum network via Infura nodes
       that you specify and spits out stats and information about blocks it has gathered
@@ -76,4 +101,4 @@ entries:
     urls:
     - https://github.com/dfroberg/snoopy/releases/download/snoopy-0.6.15/snoopy-0.6.15.tgz
     version: 0.6.15
-generated: "2022-05-09T10:47:51.154790221Z"
+generated: "2022-05-09T11:20:52.242119126Z"
