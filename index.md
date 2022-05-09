@@ -21,7 +21,9 @@ helm upgrade snoopy snoopy/snoopy \
       --set snoopy.image.tag=latest \
       --set snoopy.ingress.enabled=true \
       --set snoopy.ingress.domain.base=snoopy.local \
-      --set snoopy.metrics.enabled=true
+      --set snoopy.metrics.enabled=true \
+      --set common.snoopyApiToken=TestToken \
+      --set common.projectId=<Your Infura project ID>
 ~~~
 How to test it;
 ~~~
