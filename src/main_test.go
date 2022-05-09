@@ -100,16 +100,16 @@ func TestDeleteFilter(t *testing.T) {
 	assert.Equal(t, bool(true), DeleteFilter(1))
 }
 
-// func TestSnoop(t *testing.T) {
-// 	var wg sync.WaitGroup
-// 	wg.Add(1)
-// 	ch1 := make(chan bool)
-// 	// Run Snoop, collect 1 block and return
-// 	go snoop(&wg, 1, ch1)
-// 	var r bool = <-ch1
-// 	assert.Equal(t, bool(true), r)
-// 	close(ch1)
-// }
+func TestSnoop(t *testing.T) {
+	var wg sync.WaitGroup
+	wg.Add(2)
+	ch1 := make(chan bool)
+	// Run Snoop, collect 1 block and return
+	go snoop(&wg, 1, ch1)
+	var r bool = <-ch1
+	assert.Equal(t, bool(true), r)
+	close(ch1)
+}
 func TestSnoopWithFilter(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(2)
