@@ -12,7 +12,7 @@ snoopy:
     # -- Image Repository
     repository: "dfroberg/snoopy"
     # -- Image Tag
-    tag: "v0.6.25"
+    tag: "v0.6.26"
     # -- Image pullPolicy
     pullPolicy: "Always"
   # -- Environment vars to set
