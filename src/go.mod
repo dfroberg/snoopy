@@ -3,7 +3,7 @@ module snoopy/v2
 go 1.19
 
 require (
-	github.com/ethereum/go-ethereum v1.10.22
+	github.com/ethereum/go-ethereum v1.10.23
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.13.0
 	github.com/stretchr/testify v1.8.0
