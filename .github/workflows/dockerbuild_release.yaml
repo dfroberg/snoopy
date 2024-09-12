@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@c4ee3adeed93b1fa6a762f209fb01608c1a22f1e
+        uses: docker/metadata-action@70b2cdc6480c1a8b86edf1777157f8f437de2166
         with:
           github-token: ${{ secrets.PAT }}
           images: dfroberg/snoopy
